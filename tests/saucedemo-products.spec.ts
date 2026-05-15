@@ -99,6 +99,56 @@ test.describe('Sauce Demo products', () => {
     ).toHaveText("1");
   });
 
+  test('add 3 products and show count', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('[data-test="username"]').fill('standard_user');
+    await page.locator('[data-test="password"]').fill('secret_sauce');
+    await page.locator('[data-test="login-button"]').click();
+
+    await expect(
+      page.locator(".shopping_cart_badge"),
+      "Cart badge should not be visible"
+    ).not.toBeVisible();
+
+    const addToCartButtons = page.getByRole('button', { name: 'Add to cart' });
+    await addToCartButtons.nth(0).click();
+    await addToCartButtons.nth(1).click();
+    await addToCartButtons.nth(2).click();
+
+    await expect(
+      page.locator(".shopping_cart_badge"),
+      "Cart badge should show 3 after adding the products"
+    ).toHaveText("3");
+  });
+
+  test('remove 1 product should decrease count', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('[data-test="username"]').fill('standard_user');
+    await page.locator('[data-test="password"]').fill('secret_sauce');
+    await page.locator('[data-test="login-button"]').click();
+
+    await expect(
+      page.locator(".shopping_cart_badge"),
+      "Cart badge should not be visible"
+    ).not.toBeVisible();
+
+    const addToCartButtons = page.getByRole('button', { name: 'Add to cart' });
+
+    await addToCartButtons.nth(0).click();
+    await addToCartButtons.nth(1).click();
+    await addToCartButtons.nth(2).click();
+
+    const removeButtons = page.getByRole('button', { name: 'Remove' });
+
+    await removeButtons.nth(0).click();
+
+    await expect(
+      page.locator(".shopping_cart_badge"),
+      "Cart badge should show 2 after removing a product"
+    ).toHaveText("2");
+
+  });
+
   test('remove product and no count', async ({ page }) => {
     await page.goto('/');
     await page.locator('[data-test="username"]').fill('standard_user');
