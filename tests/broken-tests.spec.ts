@@ -1,10 +1,9 @@
 import { test, expect } from "@playwright/test";
+import { login } from "../helpers/login";
+import { standardUser } from "../test-data/users";
 
 test("login should redirect to inventory", async ({ page }) => {
-  await page.goto("https://www.saucedemo.com");
-  await page.getByPlaceholder("Username").fill("standard_user");   // ← is this the real placeholder?
-  await page.getByPlaceholder("Password").fill("secret_sauce");
-  await page.getByRole("button", { name: "Login" }).click();
+  await login(page, standardUser);
 
   await expect(page).toHaveURL(/inventory/);
 });
@@ -14,10 +13,7 @@ test("login should redirect to inventory", async ({ page }) => {
 // How I verified: [ran npx playwright test --headed and confirmed the test passes.]
 
 test("error message on wrong password", async ({ page }) => {
-  await page.goto("https://www.saucedemo.com");
-  await page.getByPlaceholder("Username").fill("standard_user");
-  await page.getByPlaceholder("Password").fill("wrong_password");
-  await page.getByRole("button", { name: "Login" }).click();
+  await login(page, { username: "standard_user", password: "wrong_password" });
 
   await expect(page.getByTestId("error")).toHaveText(
     "Epic sadface: Username and password do not match any user in this service"   // ← is this the exact text?
@@ -29,10 +25,7 @@ test("error message on wrong password", async ({ page }) => {
 // How I verified: [ran npx playwright test --headed and confirmed the test passes.]
 
 test("cart badge appears after adding product", async ({ page }) => {
-  await page.goto("/");
-  await page.getByPlaceholder("Username").fill("standard_user");
-  await page.getByPlaceholder("Password").fill("secret_sauce");
-  await page.getByRole("button", { name: "Login" }).click();
+  await login(page, standardUser);
 
   await page.getByTestId("add-to-cart-sauce-labs-backpack").click();   // ← something missing here
 
