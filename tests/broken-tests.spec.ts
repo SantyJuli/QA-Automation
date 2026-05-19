@@ -29,7 +29,7 @@ test("error message on wrong password", async ({ page }) => {
 // How I verified: [ran npx playwright test --headed and confirmed the test passes.]
 
 test("cart badge appears after adding product", async ({ page }) => {
-  await page.goto("https://www.saucedemo.com");
+  await page.goto("/");
   await page.getByPlaceholder("Username").fill("standard_user");
   await page.getByPlaceholder("Password").fill("secret_sauce");
   await page.getByRole("button", { name: "Login" }).click();
