@@ -1,17 +1,23 @@
 import { test, expect } from '@playwright/test';
-import { login } from '../../helpers/login';
 import { standardUser } from '../../test-data/users';
+import { LoginPage } from '../../pages/LoginPage';
+import { InventoryPage } from '../../pages/InventoryPage';
 
 test.describe('Inventory - sorting', () => {
+  let inventoryPage: InventoryPage;
+
   test.beforeEach(async ({ page }) => {
-    await login(page, standardUser);
+    const loginPage = new LoginPage(page);
+    await loginPage.open();
+    await loginPage.login(standardUser);
+
+    inventoryPage = new InventoryPage(page);
   });
 
-  test('should sort products by price from low to high', async ({ page }) => {
-    await page.locator('[data-test="product-sort-container"]').selectOption('lohi');
+  test('should sort products by price from low to high', async () => {
+    await inventoryPage.sortBy('lohi');
 
-    await expect(
-      page.locator('[data-test="inventory-item-name"]').first(),
-    ).toHaveText('Sauce Labs Onesie');
+    const items = await inventoryPage.items();
+    await expect(items[0].name).toHaveText('Sauce Labs Onesie');
   });
 });
