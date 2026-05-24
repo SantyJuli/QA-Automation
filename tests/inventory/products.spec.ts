@@ -1,32 +1,29 @@
 import { test, expect } from '@playwright/test';
+import { login } from '../../helpers/login';
 import { standardUser } from '../../test-data/users';
-import { LoginPage } from '../../pages/LoginPage';
-import { InventoryPage } from '../../pages/InventoryPage';
 
 test.describe('Inventory - product listing', () => {
-  let inventoryPage: InventoryPage;
-
   test.beforeEach(async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    await loginPage.open();
-    await loginPage.login(standardUser);
-
-    inventoryPage = new InventoryPage(page);
+    await login(page, standardUser);
   });
 
-  test('should display no more than 9 products on the page', async () => {
-    const items = await inventoryPage.items();
-    expect(items.length).toBeLessThanOrEqual(9);
+  test('should display no more than 9 products on the page', async ({ page }) => {
+    const count = await page.locator('.inventory_item').count();
+    expect(count).toBeLessThanOrEqual(9);
   });
 
-  test('should open product details when clicking product by name', async () => {
-    await inventoryPage.getItemByName('Sauce Labs Bike Light').openDetails();
-    await expect(inventoryPage.page).toHaveURL(/inventory-item\.html\?id=\d+/);
+  test('should open product details when clicking product by name', async ({ page }) => {
+    const items = page.locator('.inventory_item');
+    await items
+      .filter({ hasText: 'Sauce Labs Bike Light' })
+      .locator('[data-test="item-0-title-link"]')
+      .click();
+    await expect(page).toHaveURL(/inventory-item\.html\?id=\d+/);
   });
 
-  test('should open product details when clicking the second item in the list', async () => {
-    const items = await inventoryPage.items();
-    await items[1].openDetails();
-    await expect(inventoryPage.page).toHaveURL(/inventory-item\.html\?id=\d+/);
+  test('should open product details when clicking the second item in the list', async ({ page }) => {
+    const items = page.locator('.inventory_item');
+    await items.nth(1).locator('[data-test="item-0-title-link"]').click();
+    await expect(page).toHaveURL(/inventory-item\.html\?id=\d+/);
   });
 });
