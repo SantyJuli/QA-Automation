@@ -1,35 +1,33 @@
 import { test, expect } from '@playwright/test';
-import { login } from '../../helpers/login';
 import { standardUser } from '../../test-data/users';
+import { LoginPage } from '../../pages/LoginPage';
+import { InventoryPage } from '../../pages/InventoryPage';
 
 test.describe('Cart - adding products', () => {
+  let inventoryPage: InventoryPage;
+
   test.beforeEach(async ({ page }) => {
-    await login(page, standardUser);
+    const loginPage = new LoginPage(page);
+    await loginPage.open();
+    await loginPage.login(standardUser);
+
+    inventoryPage = new InventoryPage(page);
   });
 
-  test('should show cart badge with count 1 after adding a single product', async ({ page }) => {
-    await page.locator('[data-test="add-to-cart-sauce-labs-backpack"]').click();
+  test('should show cart badge with count 1 after adding a single product', async () => {
+    await inventoryPage.getItemByName('Sauce Labs Backpack').addToCart();
 
-    await expect(
-      page.locator('.shopping_cart_badge'),
-      'Cart badge should show 1 after adding a product',
-    ).toHaveText('1');
+    await expect(inventoryPage.cartBadge, 'Cart badge should show 1 after adding a product').toHaveText('1');
   });
 
-  test('should show cart badge with count 3 after adding three products', async ({ page }) => {
-    await expect(
-      page.locator('.shopping_cart_badge'),
-      'Cart badge should not be visible',
-    ).not.toBeVisible();
+  test('should show cart badge with count 3 after adding three products', async () => {
+    await expect(inventoryPage.cartBadge, 'Cart badge should not be visible before adding products').not.toBeVisible();
 
-    const addToCartButtons = page.getByRole('button', { name: 'Add to cart' });
-    await addToCartButtons.nth(0).click();
-    await addToCartButtons.nth(1).click();
-    await addToCartButtons.nth(2).click();
+    const items = await inventoryPage.items();
+    await items[0].addToCart();
+    await items[1].addToCart();
+    await items[2].addToCart();
 
-    await expect(
-      page.locator('.shopping_cart_badge'),
-      'Cart badge should show 3 after adding the products',
-    ).toHaveText('3');
+    await expect(inventoryPage.cartBadge, 'Cart badge should show 3 after adding the products').toHaveText('3');
   });
 });
