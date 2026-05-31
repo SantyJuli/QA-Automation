@@ -17,7 +17,7 @@ test.describe('Cart - removing products', () => {
   test('should decrease cart badge count by one when removing one of three products', async () => {
     await expect(inventoryPage.cartBadge, 'Cart badge should not be visible').not.toBeVisible();
 
-    const items = await inventoryPage.items();
+    const items = await inventoryPage.getItems();
     await items[0].addToCart();
     await items[1].addToCart();
     await items[2].addToCart();
@@ -28,12 +28,13 @@ test.describe('Cart - removing products', () => {
   });
 
   test('should hide cart badge after removing the only product in the cart', async () => {
-    const backpack = inventoryPage.getItemByName('Sauce Labs Backpack');
 
-    await backpack.addToCart();
+    const item = (await inventoryPage.getItems())[0];
+
+    await item.addToCart();
     await expect(inventoryPage.cartBadge, 'Cart badge should show 1 after adding a product').toHaveText('1');
 
-    await backpack.remove();
+    await item.remove();
     await expect(inventoryPage.cartBadge, 'Cart badge should not be visible after removing product').not.toBeVisible();
   });
 });

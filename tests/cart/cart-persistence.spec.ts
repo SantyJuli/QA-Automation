@@ -15,7 +15,10 @@ test.describe('Cart - state persistence', () => {
   });
 
   test('should preserve cart contents after page reload', async () => {
-    await inventoryPage.getItemByName('Sauce Labs Backpack').addToCart();
+
+    const items = await inventoryPage.getItems();
+
+    await items[0].addToCart();
 
     await inventoryPage.reload();
 

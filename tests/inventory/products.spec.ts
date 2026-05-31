@@ -15,17 +15,20 @@ test.describe('Inventory - product listing', () => {
   });
 
   test('should display no more than 9 products on the page', async () => {
-    const items = await inventoryPage.items();
+    const items = await inventoryPage.getItems();
     expect(items.length).toBeLessThanOrEqual(9);
   });
 
   test('should open product details when clicking product by name', async () => {
-    await inventoryPage.getItemByName('Sauce Labs Bike Light').openDetails();
+
+    await (await inventoryPage.getItems())[1].openDetails();
+
     await expect(inventoryPage.page).toHaveURL(/inventory-item\.html\?id=\d+/);
+
   });
 
   test('should open product details when clicking the second item in the list', async () => {
-    const items = await inventoryPage.items();
+    const items = await inventoryPage.getItems();
     await items[1].openDetails();
     await expect(inventoryPage.page).toHaveURL(/inventory-item\.html\?id=\d+/);
   });

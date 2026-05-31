@@ -15,7 +15,7 @@ test.describe('Problem user - cart behavior', () => {
   });
 
   test('should show cart badge with count 1 after adding a product', async () => {
-    await (await inventoryPage.items())[0].addToCart();
+    await (await inventoryPage.getItems())[0].addToCart();
 
     await expect(
       inventoryPage.cartBadge,
@@ -26,7 +26,7 @@ test.describe('Problem user - cart behavior', () => {
   // Known bug: Remove button does not actually remove the product for problem_user.
   // Test is expected to fail until the bug is fixed.
   test('should hide cart badge after removing product (KNOWN BUG — currently fails)', async () => {
-    const item = (await inventoryPage.items())[0];
+    const item = (await inventoryPage.getItems())[0];
     item.addToCart();
 
     await expect(

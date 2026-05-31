@@ -2,7 +2,7 @@ import { type Locator } from "@playwright/test";
 
 export class InventoryItem {
   readonly root: Locator;
-  readonly name: Locator;
+  private readonly name: Locator;
   readonly price: Locator;
   readonly addToCartButton: Locator;
   readonly removeButton: Locator;
@@ -13,6 +13,10 @@ export class InventoryItem {
     this.price = root.locator('[data-test="inventory-item-price"]');
     this.addToCartButton = root.getByRole('button', { name: 'Add to cart' });
     this.removeButton = root.getByRole('button', { name: 'Remove' });
+  }
+
+   async getName(): Promise<string> {
+    return (await this.name.innerText()) ?? '';
   }
 
   async openDetails() {

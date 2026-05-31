@@ -1,5 +1,6 @@
 import { type Locator, type Page } from "@playwright/test";
 import { InventoryItem } from "./InventoryItem";
+import { SortOptions } from "../test-data/sort-options";
 
 export class InventoryPage {
   readonly page: Page;
@@ -14,11 +15,11 @@ export class InventoryPage {
     this.itemsLocator = page.locator(".inventory_item");
   }
 
-  async items(): Promise<InventoryItem[]> {
-    return (await this.itemsLocator.all()).map(loc => new InventoryItem(loc));
+  async getItems(): Promise<InventoryItem[]> {
+    return (await this.itemsLocator.all()).map(x => new InventoryItem(x));
   }
 
-  async sortBy(option: string): Promise<void> {
+  async sortBy(option: SortOptions): Promise<void> {
     await this.page.locator('[data-test="product-sort-container"]').selectOption(option);
   }
 
